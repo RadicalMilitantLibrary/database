@@ -4,6 +4,14 @@
 
 The role "webuser" is expected by the [reference code](https://github.com/RadicalMilitantLibrary/www/) to exist and have access to a SQL database. 
 
+The folder "1077" contains a complete database (without the user accounts and comments). The file "1077.sql" is the rest of the database, you should run that AFTER you restore the folder. After that you should register the admin account and change the ownership of all the documents to that account (UPDATE document SET handle='admin';). Do the same with "subject" and "lists".
+
+The folders "1077.covers", "1077.authors" and "1077.pictures" should be in the www folder (without the 1077).
+
+Contact Jotunbane if you run into problems.
+
+
+
 ## License Terms
 
 Every contributor accepts that his code will be available to the public under the terms of at least one of the following licenses:
