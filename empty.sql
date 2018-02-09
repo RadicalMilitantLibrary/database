@@ -23,6 +23,37 @@ SET default_tablespace = '';
 
 SET default_with_oids = false;
 
+CREATE TABLE "ISO639" (
+    language_name text NOT NULL,
+    id integer NOT NULL,
+    native_name text NOT NULL,
+    "639-2B" character(3) NOT NULL,
+    "639-3" character(3) NOT NULL,
+    "639-1" character(2) NOT NULL,
+    "639-2T" character(3) NOT NULL,
+    note text
+);
+
+ALTER TABLE "ISO639" OWNER TO webuser;
+
+CREATE SEQUENCE "ISO639_id_seq"
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+ALTER TABLE "ISO639_id_seq" OWNER TO webuser;
+
+ALTER SEQUENCE "ISO639_id_seq" OWNED BY "ISO639".id;
+
+ALTER TABLE ONLY "ISO639" ALTER COLUMN id SET DEFAULT nextval('"ISO639_id_seq"'::regclass);
+
+SELECT pg_catalog.setval('"ISO639_id_seq"', 1, false);
+
+ALTER TABLE ONLY "ISO639"
+    ADD CONSTRAINT iso639_pkey PRIMARY KEY (id);
+
 CREATE TABLE author (
     name text NOT NULL,
     sort_name text NOT NULL,
