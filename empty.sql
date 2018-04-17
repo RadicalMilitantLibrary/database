@@ -270,14 +270,12 @@ ALTER SEQUENCE subject_id_seq OWNED BY subject.id;
 CREATE TABLE "user" (
     handle text NOT NULL,
     id integer NOT NULL,
-    user_name text,
-    karma integer,
+    user_name text DEFAULT 'Anonymous',
+    karma integer DEFAULT 1,
     xmpp text,
     diaspora text,
     mastodon text,
-    native_language_id integer,
-    omemo_fingerprint text,
-    otr_fingerprint text
+    native_language_id integer
 );
 
 ALTER TABLE "user" OWNER TO webuser;
