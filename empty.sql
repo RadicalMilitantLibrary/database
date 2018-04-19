@@ -291,6 +291,15 @@ ALTER TABLE user_id_seq OWNER TO webuser;
 
 ALTER SEQUENCE user_id_seq OWNED BY "user".id;
 
+CREATE TABLE korrektur (
+    doc_id integer,
+    type integer,
+    sequence integer,
+    body text
+);
+
+ALTER TABLE korrektur OWNER TO webuser;
+
 ALTER TABLE ONLY author ALTER COLUMN id SET DEFAULT nextval('author_id_seq'::regclass);
 
 ALTER TABLE ONLY document ALTER COLUMN id SET DEFAULT nextval('document_id_seq'::regclass);
