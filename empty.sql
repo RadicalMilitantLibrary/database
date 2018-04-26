@@ -275,6 +275,7 @@ CREATE TABLE "user" (
     xmpp text,
     diaspora text,
     mastodon text,
+    irc text,
     native_language_id integer
 );
 
