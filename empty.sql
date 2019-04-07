@@ -1,29 +1,19 @@
---
--- PostgreSQL database dump
---
-
--- Dumped from database version 9.4.9
--- Dumped by pg_dump version 9.4.9
--- Started on 2016-11-24 12:48:04 CET
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
+SET idle_in_transaction_session_timeout = 0;
 SET client_encoding = 'UTF8';
 SET standard_conforming_strings = on;
+SELECT pg_catalog.set_config('search_path', '', false);
 SET check_function_bodies = false;
 SET client_min_messages = warning;
-
-CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
-
-COMMENT ON EXTENSION plpgsql IS 'PL/pgSQL procedural language';
-
-SET search_path = public, pg_catalog;
+SET row_security = off;
 
 SET default_tablespace = '';
 
 SET default_with_oids = false;
 
-CREATE TABLE "ISO639" (
+CREATE TABLE public."ISO639" (
     language_name text NOT NULL,
     id integer NOT NULL,
     native_name text NOT NULL,
@@ -34,27 +24,20 @@ CREATE TABLE "ISO639" (
     note text
 );
 
-ALTER TABLE "ISO639" OWNER TO webuser;
+ALTER TABLE public."ISO639" OWNER TO webuser;
 
-CREATE SEQUENCE "ISO639_id_seq"
+CREATE SEQUENCE public."ISO639_id_seq"
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
     NO MAXVALUE
     CACHE 1;
 
-ALTER TABLE "ISO639_id_seq" OWNER TO webuser;
+ALTER TABLE public."ISO639_id_seq" OWNER TO webuser;
 
-ALTER SEQUENCE "ISO639_id_seq" OWNED BY "ISO639".id;
+ALTER SEQUENCE public."ISO639_id_seq" OWNED BY public."ISO639".id;
 
-ALTER TABLE ONLY "ISO639" ALTER COLUMN id SET DEFAULT nextval('"ISO639_id_seq"'::regclass);
-
-SELECT pg_catalog.setval('"ISO639_id_seq"', 1, false);
-
-ALTER TABLE ONLY "ISO639"
-    ADD CONSTRAINT iso639_pkey PRIMARY KEY (id);
-
-CREATE TABLE author (
+CREATE TABLE public.author (
     name text NOT NULL,
     sort_name text NOT NULL,
     bio text,
@@ -67,20 +50,20 @@ CREATE TABLE author (
     id integer NOT NULL
 );
 
-ALTER TABLE author OWNER TO webuser;
+ALTER TABLE public.author OWNER TO webuser;
 
-CREATE SEQUENCE author_id_seq
+CREATE SEQUENCE public.author_id_seq
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
     NO MAXVALUE
     CACHE 1;
 
-ALTER TABLE author_id_seq OWNER TO webuser;
+ALTER TABLE public.author_id_seq OWNER TO webuser;
 
-ALTER SEQUENCE author_id_seq OWNED BY author.id;
+ALTER SEQUENCE public.author_id_seq OWNED BY public.author.id;
 
-CREATE TABLE document (
+CREATE TABLE public.document (
     status integer DEFAULT 0 NOT NULL,
     posted_on timestamp without time zone DEFAULT now() NOT NULL,
     handle text NOT NULL,
@@ -94,129 +77,150 @@ CREATE TABLE document (
     keywords text,
     copyright text,
     downloads integer DEFAULT 0,
-    id integer NOT NULL
+    id integer NOT NULL,
+    language_id integer DEFAULT 1 NOT NULL
 );
 
-ALTER TABLE document OWNER TO webuser;
+ALTER TABLE public.document OWNER TO webuser;
 
-CREATE SEQUENCE document_id_seq
+CREATE SEQUENCE public.document_id_seq
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
     NO MAXVALUE
     CACHE 1;
 
-ALTER TABLE document_id_seq OWNER TO webuser;
+ALTER TABLE public.document_id_seq OWNER TO webuser;
 
-ALTER SEQUENCE document_id_seq OWNED BY document.id;
+ALTER SEQUENCE public.document_id_seq OWNED BY public.document.id;
 
-CREATE TABLE footnote (
+CREATE TABLE public.footnote (
     docid integer NOT NULL,
     body text NOT NULL,
     section integer NOT NULL,
     id integer NOT NULL
 );
 
-ALTER TABLE footnote OWNER TO webuser;
+ALTER TABLE public.footnote OWNER TO webuser;
 
-CREATE SEQUENCE footnote_id_seq
+CREATE SEQUENCE public.footnote_id_seq
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
     NO MAXVALUE
     CACHE 1;
 
-ALTER TABLE footnote_id_seq OWNER TO webuser;
+ALTER TABLE public.footnote_id_seq OWNER TO webuser;
 
-ALTER SEQUENCE footnote_id_seq OWNED BY footnote.id;
+ALTER SEQUENCE public.footnote_id_seq OWNED BY public.footnote.id;
 
-CREATE TABLE forum (
+CREATE TABLE public.forum (
     posted_on timestamp without time zone NOT NULL,
     author text,
     body text,
     thread_id integer NOT NULL,
     parent_id integer NOT NULL,
     level integer NOT NULL,
-    id integer NOT NULL
+    id integer NOT NULL,
+    sticky_id integer,
+    misc_id integer,
+    book_id integer,
+    author_id integer
 );
 
-ALTER TABLE forum OWNER TO webuser;
+ALTER TABLE public.forum OWNER TO webuser;
 
-CREATE SEQUENCE forum_id_seq
+CREATE SEQUENCE public.forum_id_seq
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
     NO MAXVALUE
     CACHE 1;
 
-ALTER TABLE forum_id_seq OWNER TO webuser;
+ALTER TABLE public.forum_id_seq OWNER TO webuser;
 
-ALTER SEQUENCE forum_id_seq OWNED BY forum.id;
+ALTER SEQUENCE public.forum_id_seq OWNED BY public.forum.id;
 
-CREATE TABLE message (
-    posted_on timestamp without time zone NOT NULL,
-    handle text NOT NULL,
+CREATE TABLE public.korrektur (
+    doc_id integer,
+    type integer,
+    sequence integer,
+    body text,
+    user_id integer
+);
+
+ALTER TABLE public.korrektur OWNER TO webuser;
+
+CREATE TABLE public.listitems (
+    list_id integer NOT NULL,
+    doc_id integer NOT NULL
+);
+
+ALTER TABLE public.listitems OWNER TO webuser;
+
+CREATE TABLE public.lists (
+    id integer NOT NULL,
+    name text NOT NULL,
+    description text,
+    owner text NOT NULL
+);
+
+ALTER TABLE public.lists OWNER TO webuser;
+
+CREATE SEQUENCE public.lists_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+ALTER TABLE public.lists_id_seq OWNER TO webuser;
+
+ALTER SEQUENCE public.lists_id_seq OWNED BY public.lists.id;
+
+CREATE TABLE public.message (
+    posted_on timestamp without time zone[],
+    handle text,
     subject text,
     body text,
     sender_handle text,
     id integer NOT NULL
 );
 
-ALTER TABLE message OWNER TO webuser;
+ALTER TABLE public.message OWNER TO webuser;
 
-CREATE SEQUENCE message_id_seq
+CREATE SEQUENCE public.message_id_seq
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
     NO MAXVALUE
     CACHE 1;
 
-ALTER TABLE message_id_seq OWNER TO webuser;
+ALTER TABLE public.message_id_seq OWNER TO webuser;
 
-ALTER SEQUENCE message_id_seq OWNED BY message.id;
+ALTER SEQUENCE public.message_id_seq OWNED BY public.message.id;
 
-CREATE TABLE metadata (
+CREATE TABLE public.metadata (
     document_id integer NOT NULL,
     key text NOT NULL,
     value text NOT NULL,
     id integer NOT NULL
 );
 
-ALTER TABLE metadata OWNER TO webuser;
+ALTER TABLE public.metadata OWNER TO webuser;
 
-CREATE SEQUENCE metadata_id_seq
+CREATE SEQUENCE public.metadata_id_seq
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
     NO MAXVALUE
     CACHE 1;
 
-ALTER TABLE metadata_id_seq OWNER TO webuser;
+ALTER TABLE public.metadata_id_seq OWNER TO webuser;
 
-ALTER SEQUENCE metadata_id_seq OWNED BY metadata.id;
+ALTER SEQUENCE public.metadata_id_seq OWNED BY public.metadata.id;
 
-CREATE TABLE news (
-    headline text NOT NULL,
-    body text NOT NULL,
-    author text NOT NULL,
-    posted timestamp without time zone NOT NULL,
-    id integer NOT NULL
-);
-
-ALTER TABLE news OWNER TO webuser;
-
-CREATE SEQUENCE news_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-ALTER TABLE news_id_seq OWNER TO webuser;
-
-ALTER SEQUENCE news_id_seq OWNED BY news.id;
-
-CREATE TABLE sandbox (
+CREATE TABLE public.sandbox (
     doc_id integer NOT NULL,
     paragraphtype integer NOT NULL,
     body text,
@@ -224,29 +228,29 @@ CREATE TABLE sandbox (
     parent_id integer NOT NULL
 );
 
-ALTER TABLE sandbox OWNER TO webuser;
+ALTER TABLE public.sandbox OWNER TO webuser;
 
-CREATE TABLE stylesheet (
+CREATE TABLE public.stylesheet (
     owner text NOT NULL,
     style text NOT NULL,
     name text NOT NULL,
     id integer NOT NULL
 );
 
-ALTER TABLE stylesheet OWNER TO webuser;
+ALTER TABLE public.stylesheet OWNER TO webuser;
 
-CREATE SEQUENCE stylesheet_id_seq
+CREATE SEQUENCE public.stylesheet_id_seq
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
     NO MAXVALUE
     CACHE 1;
 
-ALTER TABLE stylesheet_id_seq OWNER TO webuser;
+ALTER TABLE public.stylesheet_id_seq OWNER TO webuser;
 
-ALTER SEQUENCE stylesheet_id_seq OWNED BY stylesheet.id;
+ALTER SEQUENCE public.stylesheet_id_seq OWNED BY public.stylesheet.id;
 
-CREATE TABLE subject (
+CREATE TABLE public.subject (
     owner text,
     subject_name text NOT NULL,
     subject_description text,
@@ -254,112 +258,97 @@ CREATE TABLE subject (
     id integer NOT NULL
 );
 
-ALTER TABLE subject OWNER TO webuser;
+ALTER TABLE public.subject OWNER TO webuser;
 
-CREATE SEQUENCE subject_id_seq
+CREATE SEQUENCE public.subject_id_seq
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
     NO MAXVALUE
     CACHE 1;
 
-ALTER TABLE subject_id_seq OWNER TO webuser;
+ALTER TABLE public.subject_id_seq OWNER TO webuser;
 
-ALTER SEQUENCE subject_id_seq OWNED BY subject.id;
+ALTER SEQUENCE public.subject_id_seq OWNED BY public.subject.id;
 
-CREATE TABLE "user" (
+CREATE TABLE public."user" (
     handle text NOT NULL,
     id integer NOT NULL,
-    user_name text DEFAULT 'Anonymous',
-    karma integer DEFAULT 1,
+    karma integer DEFAULT 1 NOT NULL,
     xmpp text,
     diaspora text,
     mastodon text,
     irc text,
-    native_language_id integer
+    native_language_id integer,
+    user_name text DEFAULT 'Anonymous'::text NOT NULL,
+    ricochet text
 );
 
-ALTER TABLE "user" OWNER TO webuser;
+ALTER TABLE public."user" OWNER TO webuser;
 
-CREATE SEQUENCE user_id_seq
+CREATE SEQUENCE public.user_id_seq
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
     NO MAXVALUE
     CACHE 1;
 
-ALTER TABLE user_id_seq OWNER TO webuser;
+ALTER TABLE public.user_id_seq OWNER TO webuser;
 
-ALTER SEQUENCE user_id_seq OWNED BY "user".id;
+ALTER SEQUENCE public.user_id_seq OWNED BY public."user".id;
 
-CREATE TABLE korrektur (
-    doc_id integer,
-    type integer,
-    sequence integer,
-    body text
-);
+ALTER TABLE ONLY public."ISO639" ALTER COLUMN id SET DEFAULT nextval('public."ISO639_id_seq"'::regclass);
 
-ALTER TABLE korrektur OWNER TO webuser;
+ALTER TABLE ONLY public.author ALTER COLUMN id SET DEFAULT nextval('public.author_id_seq'::regclass);
 
-ALTER TABLE ONLY author ALTER COLUMN id SET DEFAULT nextval('author_id_seq'::regclass);
+ALTER TABLE ONLY public.document ALTER COLUMN id SET DEFAULT nextval('public.document_id_seq'::regclass);
 
-ALTER TABLE ONLY document ALTER COLUMN id SET DEFAULT nextval('document_id_seq'::regclass);
+ALTER TABLE ONLY public.footnote ALTER COLUMN id SET DEFAULT nextval('public.footnote_id_seq'::regclass);
 
-ALTER TABLE ONLY footnote ALTER COLUMN id SET DEFAULT nextval('footnote_id_seq'::regclass);
+ALTER TABLE ONLY public.forum ALTER COLUMN id SET DEFAULT nextval('public.forum_id_seq'::regclass);
 
-ALTER TABLE ONLY forum ALTER COLUMN id SET DEFAULT nextval('forum_id_seq'::regclass);
+ALTER TABLE ONLY public.lists ALTER COLUMN id SET DEFAULT nextval('public.lists_id_seq'::regclass);
 
-ALTER TABLE ONLY message ALTER COLUMN id SET DEFAULT nextval('message_id_seq'::regclass);
+ALTER TABLE ONLY public.message ALTER COLUMN id SET DEFAULT nextval('public.message_id_seq'::regclass);
 
-ALTER TABLE ONLY metadata ALTER COLUMN id SET DEFAULT nextval('metadata_id_seq'::regclass);
+ALTER TABLE ONLY public.metadata ALTER COLUMN id SET DEFAULT nextval('public.metadata_id_seq'::regclass);
 
-ALTER TABLE ONLY news ALTER COLUMN id SET DEFAULT nextval('news_id_seq'::regclass);
+ALTER TABLE ONLY public.stylesheet ALTER COLUMN id SET DEFAULT nextval('public.stylesheet_id_seq'::regclass);
 
-ALTER TABLE ONLY stylesheet ALTER COLUMN id SET DEFAULT nextval('stylesheet_id_seq'::regclass);
+ALTER TABLE ONLY public.subject ALTER COLUMN id SET DEFAULT nextval('public.subject_id_seq'::regclass);
 
-ALTER TABLE ONLY subject ALTER COLUMN id SET DEFAULT nextval('subject_id_seq'::regclass);
+ALTER TABLE ONLY public."user" ALTER COLUMN id SET DEFAULT nextval('public.user_id_seq'::regclass);
 
-ALTER TABLE ONLY "user" ALTER COLUMN id SET DEFAULT nextval('user_id_seq'::regclass);
-
-ALTER TABLE ONLY document
+ALTER TABLE ONLY public.document
     ADD CONSTRAINT document_pkey PRIMARY KEY (id);
 
-ALTER TABLE ONLY footnote
+ALTER TABLE ONLY public.footnote
     ADD CONSTRAINT footnote_pkey PRIMARY KEY (docid, id);
 
-ALTER TABLE ONLY forum
+ALTER TABLE ONLY public.forum
     ADD CONSTRAINT forum_pkey PRIMARY KEY (id);
 
-ALTER TABLE ONLY message
-    ADD CONSTRAINT message_pkey PRIMARY KEY (id);
+ALTER TABLE ONLY public."ISO639"
+    ADD CONSTRAINT iso639_pkey PRIMARY KEY (id);
 
-ALTER TABLE ONLY metadata
+ALTER TABLE ONLY public.lists
+    ADD CONSTRAINT lists_pkey PRIMARY KEY (id);
+
+ALTER TABLE ONLY public.message
+    ADD CONSTRAINT messagekey PRIMARY KEY (id);
+
+ALTER TABLE ONLY public.metadata
     ADD CONSTRAINT metadata_pkey PRIMARY KEY (id);
 
-ALTER TABLE ONLY news
-    ADD CONSTRAINT news_pkey PRIMARY KEY (id);
-
-ALTER TABLE ONLY stylesheet
+ALTER TABLE ONLY public.stylesheet
     ADD CONSTRAINT stylesheet_pkey PRIMARY KEY (id);
 
-ALTER TABLE ONLY subject
+ALTER TABLE ONLY public.subject
     ADD CONSTRAINT subject_pkey PRIMARY KEY (id);
 
-ALTER TABLE ONLY subject
+ALTER TABLE ONLY public.subject
     ADD CONSTRAINT subject_subject_name_key UNIQUE (subject_name);
 
-ALTER TABLE ONLY "user"
+ALTER TABLE ONLY public."user"
     ADD CONSTRAINT user_pkey PRIMARY KEY (id);
-
-REVOKE ALL ON SCHEMA public FROM PUBLIC;
-REVOKE ALL ON SCHEMA public FROM postgres;
-GRANT ALL ON SCHEMA public TO postgres;
-GRANT ALL ON SCHEMA public TO PUBLIC;
-
-
--- Completed on 2016-11-24 12:48:04 CET
-
---
--- PostgreSQL database dump complete
---
 
